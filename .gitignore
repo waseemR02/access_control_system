@@ -1,0 +1,7 @@
+venv/
+.venv/
+
+.env
+__pycache__/
+apis_and_stuff.txt
+.
