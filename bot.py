@@ -12,8 +12,7 @@ from dotenv import load_dotenv
 load_dotenv()
 firebase_config = json.loads(os.getenv('FIREBASE_CONFIG'))
 TOKEN = os.getenv('DISCORD_TOKEN')
-PREFIX = os.getenv('PREFIX')
-
+PREFIX = os.getenv('DISCORD_PREFIX')
 
 cred = credentials.Certificate(firebase_config)
 firebase_admin.initialize_app(cred,
@@ -25,9 +24,11 @@ bot = commands.Bot(command_prefix=PREFIX,
 
 @bot.event
 async def on_ready():
-    print('Bot is ready')
+    print(f"{bot.user.name} has connected to Discord!")
 
-# @bot.command()
-# async def ping(ctx):
+@bot.command(name='ping')
+async def ping(ctx):
+    await ctx.send('pong')
+
      
 bot.run(TOKEN, reconnect=True)
