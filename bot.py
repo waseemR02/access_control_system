@@ -17,9 +17,11 @@ PREFIX = os.getenv('DISCORD_PREFIX')
 cred = credentials.Certificate(firebase_config)
 firebase_admin.initialize_app(cred,
                               {'databaseURL': 'https://cc-project--2023-default-rtdb.asia-southeast1.firebasedatabase.app/'})
+intents = discord.Intents.default()
+intents.message_content = True
 
 bot = commands.Bot(command_prefix=PREFIX,
-                   description="Testing the bot", intents=discord.Intents.all())
+                   description="Testing the bot", intents=intents)
 
 
 @bot.event
@@ -30,5 +32,9 @@ async def on_ready():
 async def ping(ctx):
     await ctx.send('pong')
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.errors.CheckFailure):
+        await ctx.send('You do not have the correct role for this command.')
      
 bot.run(TOKEN, reconnect=True)
