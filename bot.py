@@ -9,6 +9,10 @@ from firebase_admin import db
 from dotenv import load_dotenv
 
 
+users = {
+    "25 54 141 93 ": "Waseem",
+}
+
 load_dotenv()
 firebase_config = json.loads(os.getenv('FIREBASE_CONFIG'))
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -23,8 +27,11 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=PREFIX,
                    description="Testing the bot", intents=intents)
 flag = False
+count = 0
 
-db_reference = db.reference('test/int')
+db_reference_active = db.reference('active')
+db_reference_uid = db.reference('User')
+
 @bot.event
 async def on_ready():
     print(f"{bot.user.name} has connected to Discord!")
@@ -40,17 +47,18 @@ async def send_message(channel: discord.TextChannel, message: str):
     await channel.send(message)
 
 def on_value_change(event):
+    global count
+    if not count:
+        count += 1
+        return
     global flag
-    print(f"From callback: {flag}")
     flag = True
-    # bot.loop.create_task(send_message(bot.get_channel(1101143451564781631), f"This changed {db_reference.get()}"))
 
 @tasks.loop(seconds=0.5)
 async def check_flag():
     global flag
-    print(f"From loop: {flag}")
     if flag:
-        await send_message(bot.get_channel(1101143451564781631), f"This changed {db_reference.get()}")
+        await send_message(bot.get_channel(1101143451564781631), f"{users[db_reference_uid.get()]} just entered")
         flag = False
 
 @bot.event
@@ -58,5 +66,5 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.errors.CheckFailure):
         await ctx.send('You do not have the correct role for this command.')
 
-db_reference.listen(on_value_change)
+db_reference_active.listen(on_value_change)
 bot.run(TOKEN, reconnect=True)
