@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 
 users = {
     "25 54 141 93 ": "Waseem",
+    "233 118 145 93 ": "Eswar",
+    "249 212 150 93 ": "Hari Kiran"
 }
 
 load_dotenv()
@@ -58,7 +60,8 @@ def on_value_change(event):
 async def check_flag():
     global flag
     if flag:
-        await send_message(bot.get_channel(1101143451564781631), f"{users[db_reference_uid.get()]} just entered")
+        if db_reference_uid.get() in users.keys():
+            await send_message(bot.get_channel(1101143451564781631), f"{users[db_reference_uid.get()]} just entered")
         flag = False
 
 @bot.event
